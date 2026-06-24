@@ -14,9 +14,12 @@ Then open `http://localhost:8000`.
 
 ## Adapt the questions
 
-Open `app.js` and edit the `QUESTIONS` array near the top. Each item has:
+Open `app.js` and edit the `QUESTION_BANK` array near the top. Each item has:
 
+- `id`: the topic Lucía uses to choose a relevant follow-up reply
 - `es`: the Spanish question shown and spoken aloud
 - `en`: the optional English support text shown underneath
+
+Each new attempt shuffles the bank and selects a fresh set of questions, so students do not always see the same questions in the same order.
 
 The activity records locally in the browser. No recording is uploaded to a server.
