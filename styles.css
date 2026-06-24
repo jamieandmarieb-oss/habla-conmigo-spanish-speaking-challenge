@@ -146,6 +146,13 @@ h2 {
   font-weight: 400;
 }
 
+.creator-credit {
+  margin: -10px 0 22px;
+  color: var(--teal);
+  font-size: clamp(0.88rem, 1.1vw, 1rem);
+  font-weight: 700;
+}
+
 .intro {
   max-width: 600px;
   color: var(--ink-soft);
