@@ -3,13 +3,14 @@
 /*
  * Habla conmigo — LPS1001 Spanish Beginners Speaking Challenge
  * ------------------------------------------------------------------
- * To adapt the activity, edit the QUESTIONS array below. The challenge
- * gives up to QUESTION_DURATION_MS for each answer and always ends after
- * CHALLENGE_DURATION_MS of active (unpaused) speaking time.
+ * To adapt the activity, edit the QUESTION_BANK array below. Each new
+ * attempt shuffles the bank and selects QUESTIONS_PER_SESSION prompts, so
+ * students do not always receive the same questions in the same order.
  */
 
 const CHALLENGE_DURATION_MS = 3 * 60 * 1000;
 const QUESTION_DURATION_MS = 11 * 1000;
+const QUESTIONS_PER_SESSION = 16;
 const END_OF_SPEECH_DELAY_MS = 1200;
 const FAREWELL_WINDOW_MS = 12 * 1000;
 const SPOKEN_INTRODUCTION =
@@ -17,23 +18,31 @@ const SPOKEN_INTRODUCTION =
 const SPOKEN_FAREWELL =
   "Muchas gracias por hablar conmigo y por practicar español. Lo has hecho muy bien. ¡Hasta pronto!";
 
-const QUESTIONS = [
-  { es: "Hola, ¿cómo estás?", en: "Hello, how are you?" },
-  { es: "¿Cómo te llamas?", en: "What is your name?" },
-  { es: "¿Cuántos años tienes?", en: "How old are you?" },
-  { es: "¿De dónde eres?", en: "Where are you from?" },
-  { es: "¿Dónde vives?", en: "Where do you live?" },
-  { es: "¿Qué estudias?", en: "What do you study?" },
-  { es: "¿Tienes hermanos?", en: "Do you have brothers or sisters?" },
-  { es: "¿Cómo es tu familia?", en: "What is your family like?" },
-  { es: "¿Qué te gusta hacer en tu tiempo libre?", en: "What do you like doing in your free time?" },
-  { es: "¿Te gusta la música?", en: "Do you like music?" },
-  { es: "¿Qué comes normalmente?", en: "What do you normally eat?" },
-  { es: "¿Qué bebes normalmente?", en: "What do you normally drink?" },
-  { es: "¿Cómo es tu ciudad?", en: "What is your city like?" },
-  { es: "¿Qué haces por la mañana?", en: "What do you do in the morning?" },
-  { es: "¿Qué haces los fines de semana?", en: "What do you do at weekends?" },
-  { es: "Describe un lugar que te gusta en tu ciudad.", en: "Describe a place you like in your city." }
+const QUESTION_BANK = [
+  { id: "greeting", es: "Hola, ¿cómo estás?", en: "Hello, how are you?" },
+  { id: "name", es: "¿Cómo te llamas?", en: "What is your name?" },
+  { id: "age", es: "¿Cuántos años tienes?", en: "How old are you?" },
+  { id: "origin", es: "¿De dónde eres?", en: "Where are you from?" },
+  { id: "home", es: "¿Dónde vives?", en: "Where do you live?" },
+  { id: "studies", es: "¿Qué estudias?", en: "What do you study?" },
+  { id: "university", es: "¿Dónde estudias?", en: "Where do you study?" },
+  { id: "languages", es: "¿Qué idiomas hablas?", en: "What languages do you speak?" },
+  { id: "siblings", es: "¿Tienes hermanos?", en: "Do you have brothers or sisters?" },
+  { id: "family", es: "¿Cómo es tu familia?", en: "What is your family like?" },
+  { id: "description", es: "¿Cómo eres?", en: "What are you like?" },
+  { id: "free_time", es: "¿Qué te gusta hacer en tu tiempo libre?", en: "What do you like doing in your free time?" },
+  { id: "music", es: "¿Te gusta la música?", en: "Do you like music?" },
+  { id: "sport", es: "¿Te gusta el deporte?", en: "Do you like sport?" },
+  { id: "food", es: "¿Qué comes normalmente?", en: "What do you normally eat?" },
+  { id: "favourite_food", es: "¿Cuál es tu comida favorita?", en: "What is your favourite food?" },
+  { id: "drink", es: "¿Qué bebes normalmente?", en: "What do you normally drink?" },
+  { id: "city", es: "¿Cómo es tu ciudad?", en: "What is your city like?" },
+  { id: "place", es: "Describe un lugar que te gusta en tu ciudad.", en: "Describe a place you like in your city." },
+  { id: "home_description", es: "¿Cómo es tu casa?", en: "What is your home like?" },
+  { id: "morning", es: "¿Qué haces por la mañana?", en: "What do you do in the morning?" },
+  { id: "weekend", es: "¿Qué haces los fines de semana?", en: "What do you do at weekends?" },
+  { id: "transport", es: "¿Cómo vas a la universidad?", en: "How do you go to university?" },
+  { id: "weather", es: "¿Qué tiempo hace hoy?", en: "What is the weather like today?" }
 ];
 
 const ENCOURAGEMENTS = ["¡Muy bien!", "¡Excelente!", "Continúa", "Muy buen intento"];
@@ -55,16 +64,51 @@ const LUCIA_PROFILE = {
   origin: "Soy de México.",
   home: "Vivo en la Ciudad de México.",
   studies: "Estudio idiomas.",
+  university: "Estudio en una universidad grande.",
+  languages: "Hablo español, inglés y un poco de italiano.",
   siblings: "Sí, tengo una hermana.",
   family: "Mi familia es pequeña y muy alegre.",
+  description: "Soy alegre, paciente y un poco creativa.",
   freeTime: "En mi tiempo libre, escucho música y camino en el parque.",
   music: "Sí, me gusta mucho la música latina.",
+  sport: "Sí, me gusta caminar y bailar.",
   food: "Normalmente como tacos, fruta y arroz.",
+  favouriteFood: "Mi comida favorita son los tacos.",
   drink: "Normalmente bebo agua y café.",
   city: "Mi ciudad es grande, animada y muy interesante.",
+  homeDescription: "Mi casa es pequeña, cómoda y tranquila.",
   morning: "Por la mañana desayuno y voy a la universidad.",
   weekend: "Los fines de semana veo a mis amigos y descanso.",
-  place: "Me gusta el parque cerca de mi casa. Es verde y tranquilo."
+  place: "Me gusta el parque cerca de mi casa. Es verde y tranquilo.",
+  transport: "Voy a la universidad en metro.",
+  weather: "Hoy hace buen tiempo y hay sol."
+};
+
+const LUCIA_PROFILE_BY_ID = {
+  greeting: "Estoy muy bien, gracias.",
+  name: LUCIA_PROFILE.name,
+  age: LUCIA_PROFILE.age,
+  origin: LUCIA_PROFILE.origin,
+  home: LUCIA_PROFILE.home,
+  studies: LUCIA_PROFILE.studies,
+  university: LUCIA_PROFILE.university,
+  languages: LUCIA_PROFILE.languages,
+  siblings: LUCIA_PROFILE.siblings,
+  family: LUCIA_PROFILE.family,
+  description: LUCIA_PROFILE.description,
+  free_time: LUCIA_PROFILE.freeTime,
+  music: LUCIA_PROFILE.music,
+  sport: LUCIA_PROFILE.sport,
+  food: LUCIA_PROFILE.food,
+  favourite_food: LUCIA_PROFILE.favouriteFood,
+  drink: LUCIA_PROFILE.drink,
+  city: LUCIA_PROFILE.city,
+  place: LUCIA_PROFILE.place,
+  home_description: LUCIA_PROFILE.homeDescription,
+  morning: LUCIA_PROFILE.morning,
+  weekend: LUCIA_PROFILE.weekend,
+  transport: LUCIA_PROFILE.transport,
+  weather: LUCIA_PROFILE.weather
 };
 
 // Interface elements
@@ -108,6 +152,7 @@ let challengeSegmentStart = 0;
 let challengeElapsedBeforePause = 0;
 let questionSegmentStart = 0;
 let questionElapsedBeforePause = 0;
+let sessionQuestions = [];
 let currentQuestionIndex = 0;
 let questionsShown = 0;
 let animationFrameId = 0;
@@ -141,6 +186,46 @@ function getSupportedMimeType() {
     "video/webm"
   ];
   return options.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+}
+
+function randomNumber(max) {
+  if (window.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0] / (0xffffffff + 1) * max;
+  }
+  return Math.random() * max;
+}
+
+function shuffleQuestions(questions) {
+  const shuffled = [...questions];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(randomNumber(index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function createSessionQuestions() {
+  const numberToSelect = Math.min(QUESTIONS_PER_SESSION, QUESTION_BANK.length);
+  let selectedQuestions = shuffleQuestions(QUESTION_BANK).slice(0, numberToSelect);
+  const previousSignature = window.sessionStorage?.getItem("hablaConmigoLastQuestionSet");
+
+  // Try a few extra shuffles so consecutive attempts do not feel identical.
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const signature = selectedQuestions.map((question) => question.id).join("|");
+    if (signature !== previousSignature) {
+      window.sessionStorage?.setItem("hablaConmigoLastQuestionSet", signature);
+      return selectedQuestions;
+    }
+    selectedQuestions = shuffleQuestions(QUESTION_BANK).slice(0, numberToSelect);
+  }
+
+  window.sessionStorage?.setItem(
+    "hablaConmigoLastQuestionSet",
+    selectedQuestions.map((question) => question.id).join("|")
+  );
+  return selectedQuestions;
 }
 
 async function startChallenge() {
@@ -214,6 +299,7 @@ function beginRecording() {
   challengeElapsedBeforePause = 0;
   questionElapsedBeforePause = 0;
   challengeSegmentStart = performance.now();
+  sessionQuestions = createSessionQuestions();
   currentQuestionIndex = 0;
   questionsShown = 0;
   pauseButton.innerHTML = '<span aria-hidden="true">Ⅱ</span> Pause';
@@ -248,7 +334,8 @@ function showQuestion(index, showPraise = true) {
   stopListening();
   window.speechSynthesis?.cancel();
 
-  currentQuestionIndex = ((index % QUESTIONS.length) + QUESTIONS.length) % QUESTIONS.length;
+  if (!sessionQuestions.length) sessionQuestions = createSessionQuestions();
+  currentQuestionIndex = ((index % sessionQuestions.length) + sessionQuestions.length) % sessionQuestions.length;
   questionsShown += 1;
   questionElapsedBeforePause = 0;
   questionSegmentStart = performance.now();
@@ -256,10 +343,10 @@ function showQuestion(index, showPraise = true) {
   completeTranscript = "";
   latestTranscript = "";
 
-  const question = QUESTIONS[currentQuestionIndex];
+  const question = sessionQuestions[currentQuestionIndex];
   questionText.textContent = question.es;
   translationText.textContent = question.en;
-  questionNumber.textContent = `Pregunta ${questionsShown}`;
+  questionNumber.textContent = `Pregunta ${questionsShown} de ${sessionQuestions.length}`;
   answerTimer.textContent = "11s";
   heardText.textContent = "";
   setListeningStatus("Lucía está hablando…", false);
@@ -511,8 +598,9 @@ function handleAnswer(transcript) {
 
   heardText.textContent = "";
   answerTimer.textContent = "Done";
+  const currentQuestion = sessionQuestions[currentQuestionIndex];
   const reply = transcript
-    ? createDialogueReply(transcript, currentQuestionIndex)
+    ? createDialogueReply(transcript, currentQuestion.id)
     : "";
   if (!reply) {
     answerHandled = false;
@@ -580,27 +668,10 @@ function containsAny(text, phrases) {
   return phrases.some((phrase) => text.includes(phrase));
 }
 
-function answerStudentQuestion(text, currentPromptIndex) {
+function answerStudentQuestion(text, currentPromptId) {
   const asksBack = containsAny(text, ["y tu", "y usted", "tu tambien"]);
   if (asksBack) {
-    return [
-      "Estoy muy bien, gracias.",
-      LUCIA_PROFILE.name,
-      LUCIA_PROFILE.age,
-      LUCIA_PROFILE.origin,
-      LUCIA_PROFILE.home,
-      LUCIA_PROFILE.studies,
-      LUCIA_PROFILE.siblings,
-      LUCIA_PROFILE.family,
-      LUCIA_PROFILE.freeTime,
-      LUCIA_PROFILE.music,
-      LUCIA_PROFILE.food,
-      LUCIA_PROFILE.drink,
-      LUCIA_PROFILE.city,
-      LUCIA_PROFILE.morning,
-      LUCIA_PROFILE.weekend,
-      LUCIA_PROFILE.place
-    ][currentPromptIndex];
+    return LUCIA_PROFILE_BY_ID[currentPromptId] || "Estoy muy bien, gracias.";
   }
 
   // Also answer supported questions even when the student asks them out of order.
@@ -610,69 +681,103 @@ function answerStudentQuestion(text, currentPromptIndex) {
   if (containsAny(text, ["de donde eres", "de que pais eres"])) return LUCIA_PROFILE.origin;
   if (containsAny(text, ["donde vives", "donde esta tu casa"])) return LUCIA_PROFILE.home;
   if (containsAny(text, ["que estudias", "estudias"])) return LUCIA_PROFILE.studies;
+  if (containsAny(text, ["donde estudias", "universidad"])) return LUCIA_PROFILE.university;
+  if (containsAny(text, ["que idiomas", "idiomas hablas"])) return LUCIA_PROFILE.languages;
   if (containsAny(text, ["tienes hermanos", "tienes hermanas"])) return LUCIA_PROFILE.siblings;
   if (containsAny(text, ["como es tu familia"])) return LUCIA_PROFILE.family;
+  if (containsAny(text, ["como eres"])) return LUCIA_PROFILE.description;
   if (containsAny(text, ["tiempo libre", "que te gusta hacer"])) return LUCIA_PROFILE.freeTime;
   if (containsAny(text, ["te gusta la musica", "que musica"])) return LUCIA_PROFILE.music;
+  if (containsAny(text, ["te gusta el deporte", "deporte"])) return LUCIA_PROFILE.sport;
   if (containsAny(text, ["que comes", "comida favorita"])) return LUCIA_PROFILE.food;
+  if (containsAny(text, ["cual es tu comida favorita"])) return LUCIA_PROFILE.favouriteFood;
   if (containsAny(text, ["que bebes", "bebida favorita"])) return LUCIA_PROFILE.drink;
   if (containsAny(text, ["como es tu ciudad"])) return LUCIA_PROFILE.city;
+  if (containsAny(text, ["como es tu casa"])) return LUCIA_PROFILE.homeDescription;
   if (containsAny(text, ["que haces por la manana"])) return LUCIA_PROFILE.morning;
   if (containsAny(text, ["que haces los fines", "fin de semana"])) return LUCIA_PROFILE.weekend;
   if (containsAny(text, ["lugar te gusta", "lugar favorito"])) return LUCIA_PROFILE.place;
+  if (containsAny(text, ["como vas", "transporte"])) return LUCIA_PROFILE.transport;
+  if (containsAny(text, ["que tiempo hace", "clima"])) return LUCIA_PROFILE.weather;
   return "";
 }
 
-function createDialogueReply(transcript, promptIndex) {
+function createDialogueReply(transcript, promptId) {
   const text = normalizeSpanish(transcript);
-  const directAnswer = answerStudentQuestion(text, promptIndex);
+  const directAnswer = answerStudentQuestion(text, promptId);
+  const understandsYes = containsAny(text, ["si", "claro", "tambien", "me gusta"]);
+  const understandsNo = containsAny(text, ["no", "no me gusta", "no tengo"]);
+  const positiveMood = containsAny(text, ["muy bien", "bien", "feliz", "contento", "contenta", "genial"]);
+  const difficultMood = containsAny(text, ["mal", "cansado", "cansada", "triste", "regular"]);
 
   // Use broad meaning only. Never repeat names, numbers, places or phrases
   // from an imperfect browser transcription.
-  const reactions = [
-    containsAny(text, ["muy bien", "bien", "feliz", "contento", "contenta"])
+  const reactions = {
+    greeting: positiveMood
       ? "¡Me alegro! Yo también estoy muy bien."
-      : containsAny(text, ["mal", "cansado", "cansada", "triste"])
+      : difficultMood
         ? "Lo siento. Espero que te sientas mejor pronto."
         : "Gracias por responder. Yo estoy muy bien.",
-    `¡Mucho gusto! ${LUCIA_PROFILE.name}`,
-    `¡Qué bien! ${LUCIA_PROFILE.age}`,
-    `¡Qué interesante! ${LUCIA_PROFILE.origin}`,
-    `¡Qué bien! ${LUCIA_PROFILE.home}`,
-    `¡Qué interesante! ${LUCIA_PROFILE.studies}`,
-    containsAny(text, ["no tengo", "hijo unico", "hija unica"])
+    name: `¡Mucho gusto! ${LUCIA_PROFILE.name}`,
+    age: `¡Qué bien! ${LUCIA_PROFILE.age}`,
+    origin: `¡Qué interesante! ${LUCIA_PROFILE.origin}`,
+    home: `¡Qué bien! ${LUCIA_PROFILE.home}`,
+    studies: `¡Qué interesante! ${LUCIA_PROFILE.studies}`,
+    university: `¡Muy bien! ${LUCIA_PROFILE.university}`,
+    languages: containsAny(text, ["espanol", "ingles", "frances", "italiano", "aleman"])
+      ? `¡Excelente! ${LUCIA_PROFILE.languages}`
+      : `Gracias por responder. ${LUCIA_PROFILE.languages}`,
+    siblings: containsAny(text, ["no tengo", "hijo unico", "hija unica"])
       ? "Entiendo. Yo tengo una hermana."
       : containsAny(text, ["hermano", "hermana"])
         ? "¡Qué bien! Yo tengo una hermana."
         : `Gracias por responder. ${LUCIA_PROFILE.siblings}`,
-    containsAny(text, ["grande"])
+    family: containsAny(text, ["grande"])
       ? "¡Qué bien! Mi familia es pequeña y muy alegre."
       : containsAny(text, ["pequena", "pequeno"])
         ? "¡Qué bien! Mi familia también es pequeña."
         : `¡Qué bonita descripción! ${LUCIA_PROFILE.family}`,
-    `¡Suena divertido! ${LUCIA_PROFILE.freeTime}`,
-    containsAny(text, ["no me gusta"])
+    description: containsAny(text, ["simpatico", "simpatica", "alegre", "tranquilo", "tranquila"])
+      ? `¡Qué bien! ${LUCIA_PROFILE.description}`
+      : `Gracias por la descripción. ${LUCIA_PROFILE.description}`,
+    free_time: `¡Suena divertido! ${LUCIA_PROFILE.freeTime}`,
+    music: understandsNo
       ? "Entiendo. A mí me gusta la música latina."
-      : containsAny(text, ["me gusta", "si"])
+      : understandsYes
         ? "¡Qué bien! A mí me gusta la música latina."
         : LUCIA_PROFILE.music,
-    `¡Qué rico! ${LUCIA_PROFILE.food}`,
-    `Muy bien. ${LUCIA_PROFILE.drink}`,
-    containsAny(text, ["grande", "pequena", "pequeno", "bonita", "bonito", "tranquila", "tranquilo", "animada"])
+    sport: understandsNo
+      ? "Entiendo. A mí me gusta caminar y bailar."
+      : understandsYes
+        ? "¡Excelente! A mí también me gusta moverme."
+        : LUCIA_PROFILE.sport,
+    food: `¡Qué rico! ${LUCIA_PROFILE.food}`,
+    favourite_food: `¡Qué rico! ${LUCIA_PROFILE.favouriteFood}`,
+    drink: `Muy bien. ${LUCIA_PROFILE.drink}`,
+    city: containsAny(text, ["grande", "pequena", "pequeno", "bonita", "bonito", "tranquila", "tranquilo", "animada"])
       ? "¡Qué interesante! Mi ciudad es grande y animada."
       : `¡Parece interesante! ${LUCIA_PROFILE.city}`,
-    `¡Muy buena rutina! ${LUCIA_PROFILE.morning}`,
-    `¡Qué buen plan! ${LUCIA_PROFILE.weekend}`,
-    containsAny(text, ["parque", "museo", "restaurante", "cafeteria", "playa", "centro"])
+    place: containsAny(text, ["parque", "museo", "restaurante", "cafeteria", "playa", "centro"])
       ? `¡Qué buen lugar! ${LUCIA_PROFILE.place}`
-      : `¡Me gustaría visitar ese lugar! ${LUCIA_PROFILE.place}`
-  ];
+      : `¡Me gustaría visitar ese lugar! ${LUCIA_PROFILE.place}`,
+    home_description: containsAny(text, ["pequena", "pequeno", "grande", "comoda", "comodo", "bonita", "bonito"])
+      ? `¡Qué bien! ${LUCIA_PROFILE.homeDescription}`
+      : `Gracias por describir tu casa. ${LUCIA_PROFILE.homeDescription}`,
+    morning: `¡Muy buena rutina! ${LUCIA_PROFILE.morning}`,
+    weekend: `¡Qué buen plan! ${LUCIA_PROFILE.weekend}`,
+    transport: containsAny(text, ["metro", "bus", "autobus", "tren", "coche", "camino"])
+      ? `Muy bien. ${LUCIA_PROFILE.transport}`
+      : `Gracias por responder. ${LUCIA_PROFILE.transport}`,
+    weather: containsAny(text, ["sol", "lluvia", "frio", "calor", "nublado"])
+      ? `Gracias. ${LUCIA_PROFILE.weather}`
+      : `Muy bien. ${LUCIA_PROFILE.weather}`
+  };
 
   if (directAnswer) {
     const asksOnlyQuestion = text.split(" ").length <= 4;
-    return asksOnlyQuestion ? directAnswer : reactions[promptIndex];
+    return asksOnlyQuestion ? directAnswer : reactions[promptId];
   }
-  return reactions[promptIndex];
+  return reactions[promptId] || "Gracias por responder. Muy buen intento.";
 }
 
 function scheduleAnswerTimeout(delay) {
@@ -689,7 +794,7 @@ function scheduleAnswerTimeout(delay) {
     questionElapsedBeforePause = 0;
     questionSegmentStart = performance.now();
     setListeningStatus("Lucía repite la pregunta para escuchar tu respuesta…", false);
-    speakText(QUESTIONS[currentQuestionIndex].es, startListening);
+    speakText(sessionQuestions[currentQuestionIndex].es, startListening);
     scheduleAnswerTimeout(QUESTION_DURATION_MS);
   }, Math.max(0, delay));
 }
@@ -832,7 +937,7 @@ function togglePause() {
     handleAnswer("");
   } else {
     setListeningStatus("Lucía repite la pregunta…", false);
-    speakText(QUESTIONS[currentQuestionIndex].es, startListening);
+    speakText(sessionQuestions[currentQuestionIndex].es, startListening);
     scheduleAnswerTimeout(questionRemaining);
   }
   animationFrameId = requestAnimationFrame(updateTimers);
@@ -885,7 +990,7 @@ repeatButton.addEventListener("click", () => {
   clearTimeout(questionTimeoutId);
   heardText.textContent = "";
   setListeningStatus("Lucía repite la pregunta…", false);
-  speakText(QUESTIONS[currentQuestionIndex].es, startListening);
+  speakText(sessionQuestions[currentQuestionIndex].es, startListening);
   scheduleAnswerTimeout(QUESTION_DURATION_MS);
 });
 skipButton.addEventListener("click", () => {
