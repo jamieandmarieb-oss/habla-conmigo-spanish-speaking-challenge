@@ -197,6 +197,19 @@ h2 {
   flex-wrap: wrap;
 }
 
+.access-counter {
+  display: inline-flex;
+  align-items: center;
+  margin: 18px 0 0;
+  min-height: 24px;
+}
+
+.access-counter img {
+  display: block;
+  height: 24px;
+  width: auto;
+}
+
 .button {
   min-height: 50px;
   display: inline-flex;
